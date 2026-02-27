@@ -4,6 +4,7 @@
   sources:
     - ansible.eda.webhook:
         port: 5000
+        host: 0.0.0.0
 
   rules:
     - name: Trigger Web Server Provisioning
