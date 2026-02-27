@@ -1,0 +1,48 @@
+---
+- name: Listen for new VM provisioning events
+  hosts: all
+  sources:
+    - ansible.eda.webhook:
+        port: 5000
+
+  rules:
+    - name: Trigger Web Server Provisioning
+      condition: event.payload.hostname is search(".*-web-.*", ignorecase=true)
+      action:
+        run_job_template:
+          name: "Deploy Apache Web Server"
+          organization: "Default"
+          job_args:
+            extra_vars:
+              ansible_host: "{{ event.payload.ip_address }}"
+              vm_hostname: "{{ event.payload.hostname }}"
+
+    - name: Trigger Database Provisioning
+      condition: event.payload.hostname is search(".*-db-.*", ignorecase=true)
+      action:
+        run_job_template:
+          name: "Deploy Postgres Database"
+          organization: "Default"
+          job_args:
+            extra_vars:
+              ansible_host: "{{ event.payload.ip_address }}"
+
+    - name: Trigger File Server Provisioning
+      condition: event.payload.hostname is search(".*-file-.*", ignorecase=true)
+      action:
+        run_job_template:
+          name: "Deploy NFS Server"
+          organization: "Default"
+          job_args:
+            extra_vars:
+              ansible_host: "{{ event.payload.ip_address }}"
+
+    - name: Trigger Application Server Provisioning
+      condition: event.payload.hostname is search(".*-app-.*", ignorecase=true)
+      action:
+        run_job_template:
+          name: "Deploy Application Server"
+          organization: "Default"
+          job_args:
+            extra_vars:
+              ansible_host: "{{ event.payload.ip_address }}"

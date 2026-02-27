@@ -1,0 +1,36 @@
+---
+- name: Install, enable, and start httpd
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Wait for system to become reachable over SSH
+      ansible.builtin.wait_for_connection:
+        delay: 0
+        timeout: 600  # Wait up to 10 minutes
+
+    - name: Install httpd and mod_ssl
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - mod_ssl
+
+    - name: enable httpd service
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: open http service on the firewall
+      ansible.builtin.firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+
+    - name: open https service on the firewall
+      ansible.builtin.firewalld:
+        service: https
+        state: enabled
+        permanent: true
+        immediate: true
+
