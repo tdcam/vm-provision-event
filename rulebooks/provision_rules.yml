@@ -14,6 +14,7 @@
           name: "Provision Web"
           organization: "Default"
           job_args:
+            limit: "{{ event.payload.hostname }}" 
             extra_vars:
               ansible_host: "{{ event.payload.ip_address }}"
               vm_hostname: "{{ event.payload.hostname }}"
