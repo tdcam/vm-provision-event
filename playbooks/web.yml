@@ -2,6 +2,7 @@
 - name: Install, enable, and start httpd
   hosts: all
   gather_facts: false
+  become: true
   tasks:
     - name: Wait for system to become reachable over SSH
       ansible.builtin.wait_for_connection:
