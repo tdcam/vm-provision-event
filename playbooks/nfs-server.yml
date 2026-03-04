@@ -1,0 +1,26 @@
+---
+- name: Install NFS v4 server, open firewall ports, enable, and start
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Install NFS server
+      ansible.builtin.dnf:
+        name: nfs-utils
+        state: present
+    - name: start rpcbind service
+      ansible.builtin.systemd_service:
+        name: rpcbind
+        state: started
+        enabled: true
+    - name: start NFS server
+      ansible.builtin.systemd_service:
+        name: nfs-server
+        state: started
+        enabled: true
+    - name: open firewall ports for NFS 4
+      ansible.posix.firewalld:
+        service: nfs
+        state: enabled
+        permanent: true
+        immediate: true
